@@ -7,13 +7,14 @@ import numpy as np
 import pandas as pd
 
 from skpro.distributions.base import BaseDistribution
+from skpro.domains import Finite
 
 
 class Delta(BaseDistribution):
     r"""Delta distribution aka constant distribution aka certain distribution.
 
     This distribution always produces the same value when sampling - ``c``.
-    It it useful to represent a constant value as a distribution, e.g., as a baseline
+    It is useful to represent a constant value as a distribution, e.g., as a baseline
     method to create a probabilistic prediction from a point prediction.
 
     The delta distribution is parametrized by a constant value :math:`c`.
@@ -55,6 +56,19 @@ class Delta(BaseDistribution):
                 columns = c.columns
 
         super().__init__(index=index, columns=columns)
+
+    @property
+    def support(self):
+        """Support of the distribution.
+
+        Returns
+        -------
+        Finite domain or list of Finite domains,
+            support of the distribution
+        """
+        if isinstance(self.c, float):
+            return Finite([self.c])
+        return [Finite(item) for item in self.c]
 
     def _energy_self(self):
         r"""Energy of self, w.r.t. self.
